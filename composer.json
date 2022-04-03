@@ -1,5 +1,5 @@
 {
-    "name": "fyre/csp",
+    "name": "fyre/csrf",
     "description": "A CSRF protetion library.",
     "type": "library",
     "license": "MIT",
