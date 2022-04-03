@@ -1,0 +1,30 @@
+{
+    "name": "fyre/csp",
+    "description": "A CSRF protetion library.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "elusivecodes",
+            "email": "elusivecodes@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Fyre\\CSRF\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "fyre/middleware": "^1.0",
+        "fyre/server": "^1.0"
+    },
+    "require-dev": {
+        "fyre/session": "^1.0",
+        "phpunit/phpunit": "^9"
+    }
+}
