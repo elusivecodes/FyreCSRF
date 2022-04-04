@@ -4,12 +4,12 @@ declare(strict_types=1);
 namespace Fyre\CSRF\Exceptions;
 
 use
-    RunTimeException;
+    Fyre\Error\Exceptions\ForbiddenException;
 
 /**
  * CsrfException
  */
-class CsrfException extends RunTimeException
+class CsrfException extends ForbiddenException
 {
 
     public static function forSessionNotActive()

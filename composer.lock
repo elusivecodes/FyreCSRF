@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2fbc06a9369b10837376407a0cfdfb59",
+    "content-hash": "60b4283d951c1a0b61ae23af1b1a4f41",
     "packages": [
         {
             "name": "fyre/cookie",
@@ -45,6 +45,51 @@
                 "source": "https://github.com/elusivecodes/FyreCookie/tree/v1.0.5"
             },
             "time": "2022-03-22T10:07:13+00:00"
+        },
+        {
+            "name": "fyre/error",
+            "version": "v1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/elusivecodes/FyreError.git",
+                "reference": "89bf459339e07c3befde5e084a2295ca9ed0e8db"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/elusivecodes/FyreError/zipball/89bf459339e07c3befde5e084a2295ca9ed0e8db",
+                "reference": "89bf459339e07c3befde5e084a2295ca9ed0e8db",
+                "shasum": ""
+            },
+            "require": {
+                "fyre/middleware": "^1.0",
+                "fyre/router": "^2.0",
+                "fyre/server": "^1.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Fyre\\Error\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "elusivecodes",
+                    "email": "elusivecodes@gmail.com"
+                }
+            ],
+            "description": "An error handling library.",
+            "support": {
+                "issues": "https://github.com/elusivecodes/FyreError/issues",
+                "source": "https://github.com/elusivecodes/FyreError/tree/v1.0"
+            },
+            "time": "2022-04-03T11:07:00+00:00"
         },
         {
             "name": "fyre/filesystem",
@@ -385,6 +430,52 @@
             "time": "2022-01-09T07:50:43+00:00"
         },
         {
+            "name": "fyre/router",
+            "version": "v2.0.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/elusivecodes/FyreRouter.git",
+                "reference": "69ed5b19933762b42ad0437676e6d5695aef5cab"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/elusivecodes/FyreRouter/zipball/69ed5b19933762b42ad0437676e6d5695aef5cab",
+                "reference": "69ed5b19933762b42ad0437676e6d5695aef5cab",
+                "shasum": ""
+            },
+            "require": {
+                "fyre/middleware": "^1.0",
+                "fyre/server": "^1.0",
+                "fyre/view": "^1.0"
+            },
+            "require-dev": {
+                "fyre/controller": "^1.0",
+                "phpunit/phpunit": "^9"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Fyre\\Router\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "elusivecodes",
+                    "email": "elusivecodes@gmail.com"
+                }
+            ],
+            "description": "A URL routing library.",
+            "support": {
+                "issues": "https://github.com/elusivecodes/FyreRouter/issues",
+                "source": "https://github.com/elusivecodes/FyreRouter/tree/v2.0.4"
+            },
+            "time": "2022-03-31T08:57:01+00:00"
+        },
+        {
             "name": "fyre/server",
             "version": "v1.0.14",
             "source": {
@@ -513,6 +604,49 @@
                 "source": "https://github.com/elusivecodes/FyreUserAgent/tree/v1.0.7"
             },
             "time": "2022-03-20T07:47:39+00:00"
+        },
+        {
+            "name": "fyre/view",
+            "version": "v1.0.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/elusivecodes/FyreView.git",
+                "reference": "06d9c5aba14821fbc7568d17ecebc76aede953e5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/elusivecodes/FyreView/zipball/06d9c5aba14821fbc7568d17ecebc76aede953e5",
+                "reference": "06d9c5aba14821fbc7568d17ecebc76aede953e5",
+                "shasum": ""
+            },
+            "require": {
+                "fyre/path": "^1.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Fyre\\View\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "elusivecodes",
+                    "email": "elusivecodes@gmail.com"
+                }
+            ],
+            "description": "A template rendering library.",
+            "support": {
+                "issues": "https://github.com/elusivecodes/FyreView/issues",
+                "source": "https://github.com/elusivecodes/FyreView/tree/v1.0.4"
+            },
+            "time": "2022-02-24T08:59:45+00:00"
         }
     ],
     "packages-dev": [
