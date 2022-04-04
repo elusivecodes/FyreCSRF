@@ -20,9 +20,9 @@
         }
     },
     "require": {
+        "fyre/error": "^1.0",
         "fyre/middleware": "^1.0",
-        "fyre/server": "^1.0",
-        "fyre/error": "^1.0"
+        "fyre/server": "^1.0"
     },
     "require-dev": {
         "fyre/session": "^1.0",
