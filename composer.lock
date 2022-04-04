@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "60b4283d951c1a0b61ae23af1b1a4f41",
+    "content-hash": "c8ac90ad86da64ff3aa1ef9a6ec3c4f3",
     "packages": [
         {
             "name": "fyre/cookie",
@@ -93,19 +93,20 @@
         },
         {
             "name": "fyre/filesystem",
-            "version": "v1.0.5",
+            "version": "v1.0.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/elusivecodes/FyreFileSystem.git",
-                "reference": "a580d13222aacbd11ac03902e75e91e50efd404b"
+                "reference": "9ad804cb9abd72e7644373d40fbbee512605682f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/elusivecodes/FyreFileSystem/zipball/a580d13222aacbd11ac03902e75e91e50efd404b",
-                "reference": "a580d13222aacbd11ac03902e75e91e50efd404b",
+                "url": "https://api.github.com/repos/elusivecodes/FyreFileSystem/zipball/9ad804cb9abd72e7644373d40fbbee512605682f",
+                "reference": "9ad804cb9abd72e7644373d40fbbee512605682f",
                 "shasum": ""
             },
             "require": {
+                "fyre/error": "^1.0",
                 "fyre/path": "^1.0"
             },
             "require-dev": {
@@ -130,9 +131,9 @@
             "description": "A file/folder library.",
             "support": {
                 "issues": "https://github.com/elusivecodes/FyreFileSystem/issues",
-                "source": "https://github.com/elusivecodes/FyreFileSystem/tree/v1.0.5"
+                "source": "https://github.com/elusivecodes/FyreFileSystem/tree/v1.0.7"
             },
-            "time": "2022-01-09T08:23:29+00:00"
+            "time": "2022-04-04T08:06:45+00:00"
         },
         {
             "name": "fyre/header",
@@ -722,16 +723,16 @@
         },
         {
             "name": "fyre/cache",
-            "version": "v1.1.0",
+            "version": "v1.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/elusivecodes/FyreCache.git",
-                "reference": "9b0d7458d434c652cf0fdf1ad2a314d7c254240d"
+                "reference": "9909d2ffa64ac23c7caa562924db5942ff167f9e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/elusivecodes/FyreCache/zipball/9b0d7458d434c652cf0fdf1ad2a314d7c254240d",
-                "reference": "9b0d7458d434c652cf0fdf1ad2a314d7c254240d",
+                "url": "https://api.github.com/repos/elusivecodes/FyreCache/zipball/9909d2ffa64ac23c7caa562924db5942ff167f9e",
+                "reference": "9909d2ffa64ac23c7caa562924db5942ff167f9e",
                 "shasum": ""
             },
             "require": {
@@ -760,23 +761,26 @@
             "description": "A cache library.",
             "support": {
                 "issues": "https://github.com/elusivecodes/FyreCache/issues",
-                "source": "https://github.com/elusivecodes/FyreCache/tree/v1.1.0"
+                "source": "https://github.com/elusivecodes/FyreCache/tree/v1.1.3"
             },
-            "time": "2022-03-22T10:06:01+00:00"
+            "time": "2022-04-04T08:14:08+00:00"
         },
         {
             "name": "fyre/datetime",
-            "version": "v1.0.5",
+            "version": "v1.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/elusivecodes/FyreDateTime.git",
-                "reference": "3b547189f379017f9faacc3e39a14d2ffc922d3c"
+                "reference": "f52c0c1f975700e4dc50d6dd74cada69088e3664"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/elusivecodes/FyreDateTime/zipball/3b547189f379017f9faacc3e39a14d2ffc922d3c",
-                "reference": "3b547189f379017f9faacc3e39a14d2ffc922d3c",
+                "url": "https://api.github.com/repos/elusivecodes/FyreDateTime/zipball/f52c0c1f975700e4dc50d6dd74cada69088e3664",
+                "reference": "f52c0c1f975700e4dc50d6dd74cada69088e3664",
                 "shasum": ""
+            },
+            "require": {
+                "fyre/error": "^1.0"
             },
             "require-dev": {
                 "phpunit/phpunit": "^9"
@@ -800,25 +804,26 @@
             "description": "A DateTime library.",
             "support": {
                 "issues": "https://github.com/elusivecodes/FyreDateTime/issues",
-                "source": "https://github.com/elusivecodes/FyreDateTime/tree/v1.0.5"
+                "source": "https://github.com/elusivecodes/FyreDateTime/tree/v1.0.6"
             },
-            "time": "2022-01-09T10:19:51+00:00"
+            "time": "2022-04-04T07:48:57+00:00"
         },
         {
             "name": "fyre/db",
-            "version": "v1.2.0",
+            "version": "v1.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/elusivecodes/FyreDB.git",
-                "reference": "2973ce5a3363d455f3da719ffcf3653b41edb689"
+                "reference": "b17b40f19cd99d543709300d5647e99edc99b7b1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/elusivecodes/FyreDB/zipball/2973ce5a3363d455f3da719ffcf3653b41edb689",
-                "reference": "2973ce5a3363d455f3da719ffcf3653b41edb689",
+                "url": "https://api.github.com/repos/elusivecodes/FyreDB/zipball/b17b40f19cd99d543709300d5647e99edc99b7b1",
+                "reference": "b17b40f19cd99d543709300d5647e99edc99b7b1",
                 "shasum": ""
             },
             "require": {
+                "fyre/error": "^1.0",
                 "fyre/typeparser": "^1.0"
             },
             "require-dev": {
@@ -843,9 +848,9 @@
             "description": "A database library.",
             "support": {
                 "issues": "https://github.com/elusivecodes/FyreDB/issues",
-                "source": "https://github.com/elusivecodes/FyreDB/tree/v1.2.0"
+                "source": "https://github.com/elusivecodes/FyreDB/tree/v1.2.2"
             },
-            "time": "2022-03-22T10:08:02+00:00"
+            "time": "2022-04-04T08:06:07+00:00"
         },
         {
             "name": "fyre/schema",
@@ -2221,16 +2226,16 @@
         },
         {
             "name": "sebastian/environment",
-            "version": "5.1.3",
+            "version": "5.1.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/environment.git",
-                "reference": "388b6ced16caa751030f6a69e588299fa09200ac"
+                "reference": "1b5dff7bb151a4db11d49d90e5408e4e938270f7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/environment/zipball/388b6ced16caa751030f6a69e588299fa09200ac",
-                "reference": "388b6ced16caa751030f6a69e588299fa09200ac",
+                "url": "https://api.github.com/repos/sebastianbergmann/environment/zipball/1b5dff7bb151a4db11d49d90e5408e4e938270f7",
+                "reference": "1b5dff7bb151a4db11d49d90e5408e4e938270f7",
                 "shasum": ""
             },
             "require": {
@@ -2272,7 +2277,7 @@
             ],
             "support": {
                 "issues": "https://github.com/sebastianbergmann/environment/issues",
-                "source": "https://github.com/sebastianbergmann/environment/tree/5.1.3"
+                "source": "https://github.com/sebastianbergmann/environment/tree/5.1.4"
             },
             "funding": [
                 {
@@ -2280,7 +2285,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-09-28T05:52:38+00:00"
+            "time": "2022-04-03T09:37:03+00:00"
         },
         {
             "name": "sebastian/exporter",

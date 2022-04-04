@@ -20,7 +20,6 @@
         }
     },
     "require": {
-        "fyre/error": "^1.0",
         "fyre/middleware": "^1.0",
         "fyre/server": "^1.0"
     },

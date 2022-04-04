@@ -4,12 +4,12 @@ declare(strict_types=1);
 namespace Fyre\CSRF\Exceptions;
 
 use
-    Fyre\Error\Exceptions\ForbiddenException;
+    RuntimeException;
 
 /**
  * CsrfException
  */
-class CsrfException extends ForbiddenException
+class CsrfException extends RuntimeException
 {
 
     public static function forSessionNotActive()
@@ -19,7 +19,7 @@ class CsrfException extends ForbiddenException
 
     public static function forInvalidToken()
     {
-        return new static('CSRF token mismatch');
+        return new static('CSRF token mismatch', 403);
     }
 
 }
