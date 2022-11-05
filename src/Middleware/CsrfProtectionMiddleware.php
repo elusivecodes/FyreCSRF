@@ -34,6 +34,7 @@ class CsrfProtectionMiddleware extends Middleware
     {
         $options = array_replace_recursive(static::$defaults, $options);
 
+        CsrfProtection::enable();
         CsrfProtection::setField($options['field']);
         CsrfProtection::setHeader($options['header']);
         CsrfProtection::setKey($options['key']);
@@ -48,7 +49,9 @@ class CsrfProtectionMiddleware extends Middleware
      */
     public function process(ServerRequest $request, RequestHandler $handler): ClientResponse
     {
-        CsrfProtection::checkToken($request);
+        if (CsrfProtection::isEnabled()) {
+            CsrfProtection::checkToken($request);
+        }
 
         return $handler->handle($request);
     }

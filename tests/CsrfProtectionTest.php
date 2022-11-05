@@ -10,6 +10,25 @@ use
 final class CsrfProtectionTest extends TestCase
 {
 
+    public function testEnable(): void
+    {
+        CsrfProtection::enable();
+
+        $this->assertTrue(
+            CsrfProtection::isEnabled()
+        );
+    }
+
+    public function testDisable(): void
+    {
+        CsrfProtection::enable();
+        CsrfProtection::disable();
+
+        $this->assertFalse(
+            CsrfProtection::isEnabled()
+        );
+    }
+
     public function testGetField(): void
     {
         $this->assertSame(

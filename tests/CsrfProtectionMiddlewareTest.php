@@ -141,6 +141,26 @@ final class CsrfProtectionMiddlewareTest extends TestCase
         $response = $handler->handle($request);
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
+    public function testTokenInvalidDisabled(): void
+    {
+        $middleware = new CsrfProtectionMiddleware();
+
+        $queue = new MiddlewareQueue();
+        $queue->add($middleware);
+
+        $handler = new RequestHandler($queue);
+        $request = new ServerRequest;
+
+        $request->setMethod('post');
+
+        CsrfProtection::disable();
+
+        $response = $handler->handle($request);
+    }
+
     protected function setUp(): void
     {
         CsrfProtection::setField('csrf_token');

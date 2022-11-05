@@ -36,6 +36,8 @@ abstract class CsrfProtection
 
     protected static array $exclude = [];
 
+    protected static bool $enabled = false;
+
     /**
      * Check CSRF token.
      * @param ServerRequest $request The ServerRequest.
@@ -68,6 +70,22 @@ abstract class CsrfProtection
         if (!password_verify($token, $userToken)) {
             throw CsrfException::forInvalidToken();
         }
+    }
+
+    /**
+     * Disable the CSRF protection.
+     */
+    public static function disable(): void
+    {
+        static::$enabled = false;
+    }
+
+    /**
+     * Enable the CSRF protection.
+     */
+    public static function enable(): void
+    {
+        static::$enabled = true;
     }
 
     /**
@@ -113,6 +131,15 @@ abstract class CsrfProtection
     public static function getTokenHash(): string
     {
         return password_hash(static::getToken(), PASSWORD_DEFAULT);
+    }
+
+    /**
+     * Determine if the CSRF protection is enabled.
+     * @return bool TRUE if the CSRF protection is enabled, otherwise FALSE.
+     */
+    public static function isEnabled(): bool
+    {
+        return static::$enabled;
     }
 
     /**

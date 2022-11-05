@@ -37,6 +37,22 @@ Check CSRF token.
 CrsfProtection::checkToken($request);
 ```
 
+**Disable**
+
+Disable the CSRF protection.
+
+```php
+CsrfProtection::disable();
+```
+
+**Enable**
+
+Enable the CSRF protection.
+
+```php
+CsrfProtection::enable();
+```
+
 **Get Field**
 
 Get the CSRF token field name.
@@ -75,6 +91,14 @@ Get the CSRF token hash.
 
 ```php
 $tokenHash = CsrfProtection::getTokenHash();
+```
+
+**Is Enabled**
+
+Determine if the CSRF protection is enabled.
+
+```php
+$enabled = CsrfProtection::isEnabled();
 ```
 
 **Set Excluded Paths**
