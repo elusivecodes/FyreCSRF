@@ -11,7 +11,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "Fyre\\CSRF\\": "src/"
+            "Fyre\\Security\\": "src/"
         }
     },
     "autoload-dev": {
@@ -20,11 +20,11 @@
         }
     },
     "require": {
-        "fyre/middleware": "^1.0",
-        "fyre/server": "^1.0"
+        "fyre/middleware": "^2.0",
+        "fyre/server": "^2.0"
     },
     "require-dev": {
-        "fyre/session": "^1.0",
-        "phpunit/phpunit": "^9"
+        "fyre/session": "^2.0",
+        "phpunit/phpunit": "^10"
     }
 }

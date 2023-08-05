@@ -1,32 +1,35 @@
 <?php
 declare(strict_types=1);
 
-namespace Fyre\CSRF;
+namespace Fyre\Security;
 
-use
-    Fyre\CSRF\Exceptions\CsrfException,
-    Fyre\Server\ServerRequest;
+use Fyre\Security\Exceptions\CsrfException;
+use Fyre\Server\ServerRequest;
+use ReflectionClass;
 
-use const
-    PASSWORD_DEFAULT,
-    PHP_SESSION_ACTIVE;
+use const PASSWORD_DEFAULT;
+use const PHP_SESSION_ACTIVE;
 
-use function
-    array_replace_recursive,
-    call_user_func,
-    hash,
-    in_array,
-    password_hash,
-    password_verify,
-    preg_match,
-    random_bytes,
-    session_status;
+use function hash;
+use function in_array;
+use function password_hash;
+use function password_verify;
+use function preg_match;
+use function random_bytes;
+use function session_status;
 
 /**
  * CsrfProtection
  */
 abstract class CsrfProtection
 {
+
+    protected const CHECK_METHODS = [
+        'delete',
+        'patch',
+        'post',
+        'put'
+    ];
 
     protected static string $key = '_csrfToken';
 
@@ -45,9 +48,9 @@ abstract class CsrfProtection
      */
     public static function checkToken(ServerRequest $request): void
     {
-        $userToken = static::getUserToken($request);
+        $userToken = $_POST[static::$field] ?? $request->getHeaderValue(static::$header);
 
-        static::clearData($request);
+        unset($_POST[static::$field]);
 
         if (session_status() !== PHP_SESSION_ACTIVE) {
             throw CsrfException::forSessionNotActive();
@@ -55,7 +58,7 @@ abstract class CsrfProtection
 
         $token = static::getToken();
 
-        if (!in_array($request->getMethod(), ['delete', 'patch', 'post', 'put'])) {
+        if (!in_array($request->getMethod(), static::CHECK_METHODS)) {
             return;
         }
 
@@ -67,7 +70,7 @@ abstract class CsrfProtection
             }
         }
 
-        if (!password_verify($token, $userToken)) {
+        if (!$userToken || !password_verify($token, $userToken)) {
             throw CsrfException::forInvalidToken();
         }
     }
@@ -179,39 +182,12 @@ abstract class CsrfProtection
     }
 
     /**
-     * Clear the token from request data.
-     * @param ServerRequest $request The ServerRequest.
-     */
-    protected static function clearData(ServerRequest $request): void
-    {
-        $data = $request->getPost();
-
-        if ($data === []) {
-            return;
-        }
-
-        unset($data[static::$field]);
-
-        $request->setGlobals('post', $data);
-    }
-
-    /**
      * Generate a CSRF token.
      * @return string The CSRF token.
      */
     protected static function generateToken(): string
     {
         return hash('sha256', random_bytes(12));
-    }
-
-    /**
-     * Get the CSRF user token.
-     * @param ServerRequest $request The ServerRequest.
-     * @return string The CSRF user token.
-     */
-    protected static function getUserToken(ServerRequest $request): string
-    {
-        return $request->getPost(static::$field) ?? $request->getHeaderValue(static::$header);
     }
 
 }

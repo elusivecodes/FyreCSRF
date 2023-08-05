@@ -1,6 +1,6 @@
 # FyreCSRF
 
-**FyreCSRF** is a free, CSRF protection library for *PHP*.
+**FyreCSRF** is a free, open-source CSRF protection library for *PHP*.
 
 
 ## Table Of Contents
@@ -21,7 +21,7 @@ composer require fyre/csrf
 In PHP:
 
 ```php
-use Fyre\CSRF\CsrfProtection;
+use Fyre\Security\CsrfProtection;
 ```
 
 
@@ -145,7 +145,7 @@ CsrfProtection::setKey($key);
 ## Middleware
 
 ```php
-use Fyre\CSRF\Middleware\CsrfProtectionMiddleware;
+use Fyre\Security\Middleware\CsrfProtectionMiddleware;
 ```
 
 - `$options` is an array containing options for the middleware.

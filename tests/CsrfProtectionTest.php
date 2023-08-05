@@ -3,9 +3,8 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use
-    Fyre\CSRF\CsrfProtection,
-    PHPUnit\Framework\TestCase;
+use Fyre\Security\CsrfProtection;
+use PHPUnit\Framework\TestCase;
 
 final class CsrfProtectionTest extends TestCase
 {

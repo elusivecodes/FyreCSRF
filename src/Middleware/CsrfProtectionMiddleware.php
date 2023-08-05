@@ -1,17 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace Fyre\CSRF\Middleware;
+namespace Fyre\Security\Middleware;
 
-use
-    Fyre\Middleware\Middleware,
-    Fyre\Middleware\RequestHandler,
-    Fyre\CSRF\CsrfProtection,
-    Fyre\Server\ClientResponse,
-    Fyre\Server\ServerRequest;
+use Fyre\Middleware\Middleware;
+use Fyre\Middleware\RequestHandler;
+use Fyre\Security\CsrfProtection;
+use Fyre\Server\ClientResponse;
+use Fyre\Server\ServerRequest;
 
-use function
-    array_replace_recursive;
+use function array_replace;
 
 /**
  * CsrfProtectionMiddleware
@@ -32,7 +30,7 @@ class CsrfProtectionMiddleware extends Middleware
      */
     public function __construct(array $options = [])
     {
-        $options = array_replace_recursive(static::$defaults, $options);
+        $options = array_replace(static::$defaults, $options);
 
         CsrfProtection::enable();
         CsrfProtection::setField($options['field']);
