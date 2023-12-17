@@ -24,7 +24,7 @@
         "fyre/server": "^2.0"
     },
     "require-dev": {
-        "fyre/session": "^2.0",
+        "fyre/session": "^3.0",
         "phpunit/phpunit": "^10"
     }
 }
