@@ -5,7 +5,6 @@ namespace Fyre\Security;
 
 use Fyre\Security\Exceptions\CsrfException;
 use Fyre\Server\ServerRequest;
-use ReflectionClass;
 
 use const PASSWORD_DEFAULT;
 use const PHP_SESSION_ACTIVE;
