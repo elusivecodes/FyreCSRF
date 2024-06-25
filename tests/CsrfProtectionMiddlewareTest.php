@@ -13,13 +13,12 @@ use PHPUnit\Framework\TestCase;
 
 final class CsrfProtectionMiddlewareTest extends TestCase
 {
-
     public function testConfig(): void
     {
         $middleware = new CsrfProtectionMiddleware([
             'field' => 'token',
             'header' => 'Security-Token',
-            'key' => '_token'
+            'key' => '_token',
         ]);
 
         $this->assertSame(
@@ -41,28 +40,12 @@ final class CsrfProtectionMiddlewareTest extends TestCase
     /**
      * @doesNotPerformAssertions
      */
-    public function testGet(): void
-    {
-        $middleware = new CsrfProtectionMiddleware();
-
-        $queue = new MiddlewareQueue();
-        $queue->add($middleware);
-
-        $handler = new RequestHandler($queue);
-        $request = new ServerRequest();
-
-        $response = $handler->handle($request);
-    }
-
-    /**
-     * @doesNotPerformAssertions
-     */
     public function testExclude(): void
     {
         $middleware = new CsrfProtectionMiddleware([
             'exclude' => [
-                '.*'
-            ]
+                '.*',
+            ],
         ]);
 
         $queue = new MiddlewareQueue();
@@ -76,27 +59,20 @@ final class CsrfProtectionMiddlewareTest extends TestCase
         $response = $handler->handle($request);
     }
 
-    public function testTokenPost(): void
+    /**
+     * @doesNotPerformAssertions
+     */
+    public function testGet(): void
     {
         $middleware = new CsrfProtectionMiddleware();
 
         $queue = new MiddlewareQueue();
         $queue->add($middleware);
 
-        $field = CsrfProtection::getField();
-
-        $_POST[$field] = CsrfProtection::getTokenHash();
-
         $handler = new RequestHandler($queue);
-        $request = new ServerRequest([
-            'method' => 'post'
-        ]);
+        $request = new ServerRequest();
 
         $response = $handler->handle($request);
-
-        $this->assertNull(
-            $request->getPost($field)
-        );
     }
 
     /**
@@ -115,8 +91,8 @@ final class CsrfProtectionMiddlewareTest extends TestCase
         $request = new ServerRequest([
             'method' => 'post',
             'headers' => [
-                $header => CsrfProtection::getTokenHash()
-            ]
+                $header => CsrfProtection::getTokenHash(),
+            ],
         ]);
 
         $response = $handler->handle($request);
@@ -133,7 +109,7 @@ final class CsrfProtectionMiddlewareTest extends TestCase
 
         $handler = new RequestHandler($queue);
         $request = new ServerRequest([
-            'method' => 'post'
+            'method' => 'post',
         ]);
 
         $response = $handler->handle($request);
@@ -151,12 +127,35 @@ final class CsrfProtectionMiddlewareTest extends TestCase
 
         $handler = new RequestHandler($queue);
         $request = new ServerRequest([
-            'method' => 'post'
+            'method' => 'post',
         ]);
 
         CsrfProtection::disable();
 
         $response = $handler->handle($request);
+    }
+
+    public function testTokenPost(): void
+    {
+        $middleware = new CsrfProtectionMiddleware();
+
+        $queue = new MiddlewareQueue();
+        $queue->add($middleware);
+
+        $field = CsrfProtection::getField();
+
+        $_POST[$field] = CsrfProtection::getTokenHash();
+
+        $handler = new RequestHandler($queue);
+        $request = new ServerRequest([
+            'method' => 'post',
+        ]);
+
+        $response = $handler->handle($request);
+
+        $this->assertNull(
+            $request->getPost($field)
+        );
     }
 
     protected function setUp(): void
@@ -169,5 +168,4 @@ final class CsrfProtectionMiddlewareTest extends TestCase
         $_SESSION = [];
         $_POST = [];
     }
-
 }

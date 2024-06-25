@@ -16,16 +16,16 @@ use function array_replace;
  */
 class CsrfProtectionMiddleware extends Middleware
 {
-
     protected static array $defaults = [
         'field' => 'csrf_token',
         'header' => 'Csrf-Token',
         'key' => '_csrfToken',
-        'exclude' => []
+        'exclude' => [],
     ];
 
     /**
      * New CsrfProtectionMiddleware constructor.
+     *
      * @param array $options Options for the middleware.
      */
     public function __construct(array $options = [])
@@ -41,6 +41,7 @@ class CsrfProtectionMiddleware extends Middleware
 
     /**
      * Process a ServerRequest.
+     *
      * @param ServerRequest $request The ServerRequest.
      * @param RequestHandler $handler The RequestHandler.
      * @return ClientResponse The ClientResponse.
@@ -53,5 +54,4 @@ class CsrfProtectionMiddleware extends Middleware
 
         return $handler->handle($request);
     }
-
 }

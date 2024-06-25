@@ -8,22 +8,21 @@ use PHPUnit\Framework\TestCase;
 
 final class CsrfProtectionTest extends TestCase
 {
-
-    public function testEnable(): void
-    {
-        CsrfProtection::enable();
-
-        $this->assertTrue(
-            CsrfProtection::isEnabled()
-        );
-    }
-
     public function testDisable(): void
     {
         CsrfProtection::enable();
         CsrfProtection::disable();
 
         $this->assertFalse(
+            CsrfProtection::isEnabled()
+        );
+    }
+
+    public function testEnable(): void
+    {
+        CsrfProtection::enable();
+
+        $this->assertTrue(
             CsrfProtection::isEnabled()
         );
     }
@@ -82,6 +81,16 @@ final class CsrfProtectionTest extends TestCase
         );
     }
 
+    public function testSession(): void
+    {
+        $key = CsrfProtection::getKey();
+
+        $this->assertSame(
+            CsrfProtection::getToken(),
+            $_SESSION[$key]
+        );
+    }
+
     public function testSetField(): void
     {
         CsrfProtection::setField('token');
@@ -112,16 +121,6 @@ final class CsrfProtectionTest extends TestCase
         );
     }
 
-    public function testSession(): void
-    {
-        $key = CsrfProtection::getKey();
-
-        $this->assertSame(
-            CsrfProtection::getToken(),
-            $_SESSION[$key]
-        );
-    }
-
     protected function setUp(): void
     {
         CsrfProtection::setField('csrf_token');
@@ -131,5 +130,4 @@ final class CsrfProtectionTest extends TestCase
 
         $_SESSION = [];
     }
-
 }
