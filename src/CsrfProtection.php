@@ -3,14 +3,15 @@ declare(strict_types=1);
 
 namespace Fyre\Security;
 
+use Closure;
 use Fyre\Security\Exceptions\CsrfException;
 use Fyre\Server\ServerRequest;
 
+use function call_user_func;
 use function hash;
 use function in_array;
 use function password_hash;
 use function password_verify;
-use function preg_match;
 use function random_bytes;
 use function session_status;
 
@@ -31,13 +32,13 @@ abstract class CsrfProtection
 
     protected static bool $enabled = false;
 
-    protected static array $exclude = [];
-
     protected static string $field = 'csrf_token';
 
     protected static string $header = 'Csrf-Token';
 
     protected static string $key = '_csrfToken';
+
+    protected static Closure|null $skipCheck = null;
 
     /**
      * Check CSRF token.
@@ -52,23 +53,19 @@ abstract class CsrfProtection
 
         unset($_POST[static::$field]);
 
+        if (!in_array($request->getMethod(), static::CHECK_METHODS)) {
+            return;
+        }
+
+        if (static::$skipCheck && call_user_func(static::$skipCheck, $request) === true) {
+            return;
+        }
+
         if (session_status() !== PHP_SESSION_ACTIVE) {
             throw CsrfException::forSessionNotActive();
         }
 
         $token = static::getToken();
-
-        if (!in_array($request->getMethod(), static::CHECK_METHODS)) {
-            return;
-        }
-
-        $path = $request->getUri()->getPath();
-
-        foreach (static::$exclude as $excludedPath) {
-            if (preg_match('`'.$excludedPath.'$`', $path)) {
-                return;
-            }
-        }
 
         if (!$userToken || !password_verify($token, $userToken)) {
             throw CsrfException::forInvalidToken();
@@ -152,16 +149,6 @@ abstract class CsrfProtection
     }
 
     /**
-     * Set the excluded paths.
-     *
-     * @param array $exclude The excluded paths.
-     */
-    public static function setExcludedPaths(array $exclude): void
-    {
-        static::$exclude = $exclude;
-    }
-
-    /**
      * Set the CSRF token field name.
      *
      * @param string $field The CSRF token field name.
@@ -189,6 +176,16 @@ abstract class CsrfProtection
     public static function setKey(string $key): void
     {
         static::$key = $key;
+    }
+
+    /**
+     * Set the skip check callback.
+     *
+     * @param Closure|null $skipCheck The skip check callback.
+     */
+    public static function skipCheckCallback(Closure|null $skipCheck): void
+    {
+        static::$skipCheck = $skipCheck;
     }
 
     /**

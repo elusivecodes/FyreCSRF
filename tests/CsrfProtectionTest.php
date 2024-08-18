@@ -126,7 +126,7 @@ final class CsrfProtectionTest extends TestCase
         CsrfProtection::setField('csrf_token');
         CsrfProtection::setHeader('Csrf-Token');
         CsrfProtection::setKey('_csrfToken');
-        CsrfProtection::setExcludedPaths([]);
+        CsrfProtection::skipCheckCallback(null);
 
         $_SESSION = [];
     }

@@ -40,28 +40,6 @@ final class CsrfProtectionMiddlewareTest extends TestCase
     /**
      * @doesNotPerformAssertions
      */
-    public function testExclude(): void
-    {
-        $middleware = new CsrfProtectionMiddleware([
-            'exclude' => [
-                '.*',
-            ],
-        ]);
-
-        $queue = new MiddlewareQueue();
-        $queue->add($middleware);
-
-        $handler = new RequestHandler($queue);
-        $request = new ServerRequest();
-
-        $request->setMethod('post');
-
-        $response = $handler->handle($request);
-    }
-
-    /**
-     * @doesNotPerformAssertions
-     */
     public function testGet(): void
     {
         $middleware = new CsrfProtectionMiddleware();
@@ -71,6 +49,30 @@ final class CsrfProtectionMiddlewareTest extends TestCase
 
         $handler = new RequestHandler($queue);
         $request = new ServerRequest();
+
+        $response = $handler->handle($request);
+    }
+
+    public function testSkipCheck(): void
+    {
+        $middleware = new CsrfProtectionMiddleware([
+            'skipCheck' => function(ServerRequest $request): bool {
+                $this->assertInstanceOf(
+                    ServerRequest::class,
+                    $request
+                );
+
+                return true;
+            },
+        ]);
+
+        $queue = new MiddlewareQueue();
+        $queue->add($middleware);
+
+        $handler = new RequestHandler($queue);
+        $request = new ServerRequest([
+            'method' => 'post'
+        ]);
 
         $response = $handler->handle($request);
     }
@@ -163,7 +165,7 @@ final class CsrfProtectionMiddlewareTest extends TestCase
         CsrfProtection::setField('csrf_token');
         CsrfProtection::setHeader('Csrf-Token');
         CsrfProtection::setKey('_csrfToken');
-        CsrfProtection::setExcludedPaths([]);
+        CsrfProtection::skipCheckCallback(null);
 
         $_SESSION = [];
         $_POST = [];

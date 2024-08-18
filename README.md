@@ -101,16 +101,6 @@ Determine if the CSRF protection is enabled.
 $enabled = CsrfProtection::isEnabled();
 ```
 
-**Set Excluded Paths**
-
-Set the excluded paths.
-
-- `$exclude` is an array containing the paths to exclude.
-
-```php
-CsrfProtection::setExcludedPaths($exclude);
-```
-
 **Set Field**
 
 Set the CSRF token field name.
@@ -141,6 +131,18 @@ Set the CSRF session key.
 CsrfProtection::setKey($key);
 ```
 
+**Skip Check Callback**
+
+Set the skip check callback.
+
+- `$skipCheck` is a *Closure* that accepts a [*ServerRequest*](https://github.com/elusivecodes/FyreServer#server-requests) as the first argument.
+
+```php
+CsrfProtection::skipCheckCallback($skipCheck);
+```
+
+The skip check callback should return *true* if the CSRF check should not be performed.
+
 
 ## Middleware
 
@@ -152,11 +154,13 @@ use Fyre\Security\Middleware\CsrfProtectionMiddleware;
     - `field` is a string representing the CSRF token field name, and will default to "*csrf_token*".
     - `header` is a string representing the CSRF token header name, and will default to "*Csrf-Token*".
     - `key` is a string representing the CSRF session key and will default to "*_csrfToken*".
-    - `exclude` is an array containing the paths to exclude.
+    - `skipCheck` is a *Closure* that accepts a [*ServerRequest*](https://github.com/elusivecodes/FyreServer#server-requests) as the first argument.
 
 ```php
 $middleware = new CsrfProtectionMiddleware($options);
 ```
+
+The skip check callback should return *true* if the CSRF check should not be performed.
 
 **Process**
 

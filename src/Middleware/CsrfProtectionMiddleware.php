@@ -20,7 +20,7 @@ class CsrfProtectionMiddleware extends Middleware
         'field' => 'csrf_token',
         'header' => 'Csrf-Token',
         'key' => '_csrfToken',
-        'exclude' => [],
+        'skipCheck' => null,
     ];
 
     /**
@@ -36,7 +36,7 @@ class CsrfProtectionMiddleware extends Middleware
         CsrfProtection::setField($options['field']);
         CsrfProtection::setHeader($options['header']);
         CsrfProtection::setKey($options['key']);
-        CsrfProtection::setExcludedPaths($options['exclude']);
+        CsrfProtection::skipCheckCallback($options['skipCheck']);
     }
 
     /**
