@@ -71,7 +71,7 @@ final class CsrfProtectionMiddlewareTest extends TestCase
 
         $handler = new RequestHandler($queue);
         $request = new ServerRequest([
-            'method' => 'post'
+            'method' => 'post',
         ]);
 
         $response = $handler->handle($request);
@@ -146,12 +146,17 @@ final class CsrfProtectionMiddlewareTest extends TestCase
 
         $field = CsrfProtection::getField();
 
-        $_POST[$field] = CsrfProtection::getTokenHash();
-
-        $handler = new RequestHandler($queue);
         $request = new ServerRequest([
             'method' => 'post',
+            'globals' => [
+                'post' => [
+                    $field => CsrfProtection::getTokenHash(),
+                ],
+            ],
         ]);
+        $handler = new RequestHandler($queue, beforeHandle: function(ServerRequest $newRequest) use (&$request): void {
+            $request = $newRequest;
+        });
 
         $response = $handler->handle($request);
 
@@ -168,6 +173,5 @@ final class CsrfProtectionMiddlewareTest extends TestCase
         CsrfProtection::skipCheckCallback(null);
 
         $_SESSION = [];
-        $_POST = [];
     }
 }

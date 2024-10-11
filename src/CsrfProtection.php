@@ -44,21 +44,30 @@ abstract class CsrfProtection
      * Check CSRF token.
      *
      * @param ServerRequest $request The ServerRequest.
+     * @return ServerRequest The ServerRequest.
      *
      * @throws CsrfException if the token is invalid.
      */
-    public static function checkToken(ServerRequest $request): void
+    public static function checkToken(ServerRequest $request): ServerRequest
     {
-        $userToken = $_POST[static::$field] ?? $request->getHeaderValue(static::$header);
+        $data = $request->getPost();
 
-        unset($_POST[static::$field]);
+        if (array_key_exists(static::$field, $data)) {
+            $userToken = $data[static::$field];
+
+            unset($data[static::$field]);
+
+            $request = $request->setGlobal('post', $data);
+        } else {
+            $userToken = $request->getHeaderValue(static::$header);
+        }
 
         if (!in_array($request->getMethod(), static::CHECK_METHODS)) {
-            return;
+            return $request;
         }
 
         if (static::$skipCheck && call_user_func(static::$skipCheck, $request) === true) {
-            return;
+            return $request;
         }
 
         if (session_status() !== PHP_SESSION_ACTIVE) {
@@ -70,6 +79,8 @@ abstract class CsrfProtection
         if (!$userToken || !password_verify($token, $userToken)) {
             throw CsrfException::forInvalidToken();
         }
+
+        return $request;
     }
 
     /**

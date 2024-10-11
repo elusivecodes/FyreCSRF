@@ -49,7 +49,7 @@ class CsrfProtectionMiddleware extends Middleware
     public function process(ServerRequest $request, RequestHandler $handler): ClientResponse
     {
         if (CsrfProtection::isEnabled()) {
-            CsrfProtection::checkToken($request);
+            $request = CsrfProtection::checkToken($request);
         }
 
         return $handler->handle($request);
