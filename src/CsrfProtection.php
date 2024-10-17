@@ -7,7 +7,6 @@ use Closure;
 use Fyre\Security\Exceptions\CsrfException;
 use Fyre\Server\ServerRequest;
 
-use function call_user_func;
 use function hash;
 use function in_array;
 use function password_hash;
@@ -66,7 +65,7 @@ abstract class CsrfProtection
             return $request;
         }
 
-        if (static::$skipCheck && call_user_func(static::$skipCheck, $request) === true) {
+        if (static::$skipCheck && (static::$skipCheck)($request) === true) {
             return $request;
         }
 
