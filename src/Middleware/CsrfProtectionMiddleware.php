@@ -3,55 +3,40 @@ declare(strict_types=1);
 
 namespace Fyre\Security\Middleware;
 
+use Closure;
 use Fyre\Middleware\Middleware;
-use Fyre\Middleware\RequestHandler;
 use Fyre\Security\CsrfProtection;
 use Fyre\Server\ClientResponse;
 use Fyre\Server\ServerRequest;
-
-use function array_replace;
 
 /**
  * CsrfProtectionMiddleware
  */
 class CsrfProtectionMiddleware extends Middleware
 {
-    protected static array $defaults = [
-        'field' => 'csrf_token',
-        'header' => 'Csrf-Token',
-        'key' => '_csrfToken',
-        'skipCheck' => null,
-    ];
+    protected CsrfProtection $csrfProtection;
 
     /**
      * New CsrfProtectionMiddleware constructor.
      *
-     * @param array $options Options for the middleware.
+     * @param CsrfProtection $csrfProtection The CsrfProtection.
      */
-    public function __construct(array $options = [])
+    public function __construct(CsrfProtection $csrfProtection)
     {
-        $options = array_replace(static::$defaults, $options);
-
-        CsrfProtection::enable();
-        CsrfProtection::setField($options['field']);
-        CsrfProtection::setHeader($options['header']);
-        CsrfProtection::setKey($options['key']);
-        CsrfProtection::skipCheckCallback($options['skipCheck']);
+        $this->csrfProtection = $csrfProtection;
     }
 
     /**
-     * Process a ServerRequest.
+     * Handle a ServerRequest.
      *
      * @param ServerRequest $request The ServerRequest.
-     * @param RequestHandler $handler The RequestHandler.
+     * @param Closure $next The RequestHandler.
      * @return ClientResponse The ClientResponse.
      */
-    public function process(ServerRequest $request, RequestHandler $handler): ClientResponse
+    public function handle(ServerRequest $request, Closure $next): ClientResponse
     {
-        if (CsrfProtection::isEnabled()) {
-            $request = CsrfProtection::checkToken($request);
-        }
+        $request = $this->csrfProtection->checkToken($request);
 
-        return $handler->handle($request);
+        return $this->csrfProtection->beforeResponse($request, $next($request));
     }
 }

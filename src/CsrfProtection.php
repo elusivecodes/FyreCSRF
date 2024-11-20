@@ -4,23 +4,29 @@ declare(strict_types=1);
 namespace Fyre\Security;
 
 use Closure;
+use Fyre\Config\Config;
+use Fyre\Container\Container;
 use Fyre\Security\Exceptions\CsrfException;
+use Fyre\Server\ClientResponse;
 use Fyre\Server\ServerRequest;
 
-use function hash;
+use function array_key_exists;
+use function array_replace_recursive;
+use function base64_decode;
+use function base64_encode;
+use function chr;
+use function hash_equals;
+use function hash_hmac;
 use function in_array;
-use function password_hash;
-use function password_verify;
+use function ord;
 use function random_bytes;
-use function session_status;
-
-use const PASSWORD_DEFAULT;
-use const PHP_SESSION_ACTIVE;
+use function strlen;
+use function substr;
 
 /**
  * CsrfProtection
  */
-abstract class CsrfProtection
+class CsrfProtection
 {
     protected const CHECK_METHODS = [
         'delete',
@@ -29,15 +35,79 @@ abstract class CsrfProtection
         'put',
     ];
 
-    protected static bool $enabled = false;
+    protected const TOKEN_LENGTH = 16;
 
-    protected static string $field = 'csrf_token';
+    protected static array $defaults = [
+        'cookie' => [
+            'name' => 'CsrfToken',
+            'expires' => 0,
+            'domain' => '',
+            'path' => '/',
+            'secure' => true,
+            'httpOnly' => false,
+            'sameSite' => 'Lax',
+        ],
+        'field' => 'csrf_token',
+        'header' => 'Csrf-Token',
+        'salt' => null,
+        'skipCheck' => null,
+    ];
 
-    protected static string $header = 'Csrf-Token';
+    protected Container $container;
 
-    protected static string $key = '_csrfToken';
+    protected array $cookieOptions;
 
-    protected static Closure|null $skipCheck = null;
+    protected string|null $field;
+
+    protected string|null $header;
+
+    protected string $salt;
+
+    protected Closure|null $skipCheck;
+
+    protected string|null $token;
+
+    /**
+     * New CsrfProtection constructor.
+     *
+     * @param Container $container The Container.
+     * @param Config $config The Config.
+     */
+    public function __construct(Container $container, Config $config)
+    {
+        $this->container = $container;
+
+        $options = array_replace_recursive(static::$defaults, $config->get('Csrf', []));
+
+        $this->cookieOptions = $options['cookie'];
+        $this->field = $options['field'];
+        $this->header = $options['header'];
+        $this->salt = $options['salt'];
+        $this->skipCheck = $options['skipCheck'];
+    }
+
+    /**
+     * Update the ClientResponse before sending to client.
+     *
+     * @param ServerRequest $request The ServerRequest.
+     * @param ClientResponse $response The ClientResponse.
+     * @return ClientResponse The ClientResponse.
+     */
+    public function beforeResponse(ServerRequest $request, ClientResponse $response): ClientResponse
+    {
+        if ($request->getCookie($this->cookieOptions['name'])) {
+            return $response;
+        }
+
+        return $response->setCookie($this->cookieOptions['name'], $this->getCookieToken(), [
+            'expires' => $this->cookieOptions['expires'],
+            'domain' => $this->cookieOptions['domain'],
+            'path' => $this->cookieOptions['path'],
+            'secure' => $this->cookieOptions['secure'],
+            'httpOnly' => $this->cookieOptions['httpOnly'],
+            'sameSite' => $this->cookieOptions['sameSite'],
+        ]);
+    }
 
     /**
      * Check CSRF token.
@@ -47,35 +117,43 @@ abstract class CsrfProtection
      *
      * @throws CsrfException if the token is invalid.
      */
-    public static function checkToken(ServerRequest $request): ServerRequest
+    public function checkToken(ServerRequest $request): ServerRequest
     {
-        $data = $request->getPost();
-
-        if (array_key_exists(static::$field, $data)) {
-            $userToken = $data[static::$field];
-
-            unset($data[static::$field]);
-
-            $request = $request->setGlobal('post', $data);
-        } else {
-            $userToken = $request->getHeaderValue(static::$header);
+        if ($request->getParam('csrf')) {
+            throw CsrfException::forCsrfAlreadySet();
         }
 
-        if (!in_array($request->getMethod(), static::CHECK_METHODS)) {
+        $request = $request->setParam('csrf', $this);
+
+        $hasData = in_array($request->getMethod(), static::CHECK_METHODS);
+        $userToken = null;
+
+        if ($hasData && $this->field) {
+            $data = $request->getPost();
+
+            if (array_key_exists($this->field, $data)) {
+                $userToken = $data[$this->field];
+
+                unset($data[$this->field]);
+
+                $request = $request->setGlobal('post', $data);
+            }
+        }
+
+        $this->token = $request->getCookie($this->cookieOptions['name']);
+
+        if (!$hasData || ($this->skipCheck && $this->container->call($this->skipCheck, ['request' => $request]) === true)) {
             return $request;
         }
 
-        if (static::$skipCheck && (static::$skipCheck)($request) === true) {
-            return $request;
-        }
+        $userToken ??= $request->getHeaderValue($this->header);
 
-        if (session_status() !== PHP_SESSION_ACTIVE) {
-            throw CsrfException::forSessionNotActive();
-        }
-
-        $token = static::getToken();
-
-        if (!$userToken || !password_verify($token, $userToken)) {
+        if (
+            !$userToken ||
+            !$this->token ||
+            !$this->verifyToken($this->token) ||
+            !hash_equals($this->unsaltToken($userToken), $this->token)
+        ) {
             throw CsrfException::forInvalidToken();
         }
 
@@ -83,19 +161,13 @@ abstract class CsrfProtection
     }
 
     /**
-     * Disable the CSRF protection.
+     * Get the CSRF cookie token.
+     *
+     * @return string The CSRF user token.
      */
-    public static function disable(): void
+    public function getCookieToken(): string
     {
-        static::$enabled = false;
-    }
-
-    /**
-     * Enable the CSRF protection.
-     */
-    public static function enable(): void
-    {
-        static::$enabled = true;
+        return $this->token ??= $this->createToken();
     }
 
     /**
@@ -103,9 +175,19 @@ abstract class CsrfProtection
      *
      * @return string The CSRF token field name.
      */
-    public static function getField(): string
+    public function getField(): string
     {
-        return static::$field;
+        return $this->field;
+    }
+
+    /**
+     * Get the CSRF form token.
+     *
+     * @return string The CSRF form token.
+     */
+    public function getFormToken(): string
+    {
+        return $this->saltToken($this->getCookieToken());
     }
 
     /**
@@ -113,98 +195,101 @@ abstract class CsrfProtection
      *
      * @return string The CSRF token header name.
      */
-    public static function getHeader(): string
+    public function getHeader(): string
     {
-        return static::$header;
+        return $this->header;
     }
 
     /**
-     * Get the CSRF session key.
+     * Create a token.
      *
-     * @return string The CSRF session key.
+     * @return string The token.
      */
-    public static function getKey(): string
+    protected function createToken(): string
     {
-        return static::$key;
+        $token = random_bytes(static::TOKEN_LENGTH);
+        $token .= hash_hmac('sha1', $token, $this->salt);
+
+        return base64_encode($token);
     }
 
     /**
-     * Get the CSRF token.
+     * Add salt to a token.
      *
-     * @return string The CSRF token.
+     * @param string $token The unsalted token
+     * @return string The salted token.
      */
-    public static function getToken(): string
+    protected function saltToken(string $token): string|null
     {
-        return $_SESSION[static::$key] ??= static::generateToken();
+        $decoded = base64_decode($token, true);
+
+        if ($decoded === false) {
+            return null;
+        }
+
+        $length = strlen($decoded);
+        $salt = random_bytes($length);
+        $salted = '';
+        for ($i = 0; $i < $length; $i++) {
+            // XOR the token and salt together so that we can reverse it later.
+            $salted .= chr(ord($decoded[$i]) ^ ord($salt[$i]));
+        }
+
+        return base64_encode($salted.$salt);
     }
 
     /**
-     * Get the CSRF token hash.
+     * Remove salt from a token.
      *
-     * @return string The CSRF token hash.
+     * @param string $token The salted token
+     * @return string The unsalted token.
      */
-    public static function getTokenHash(): string
+    protected function unsaltToken(string $token): string|null
     {
-        return password_hash(static::getToken(), PASSWORD_DEFAULT);
+        $decoded = base64_decode($token, true);
+
+        if ($decoded === false) {
+            return null;
+        }
+
+        $length = static::TOKEN_LENGTH + 40;
+        $salted = substr($decoded, 0, $length);
+        $salt = substr($decoded, $length);
+
+        $unsalted = '';
+        for ($i = 0; $i < $length; $i++) {
+            // Reverse the XOR to desalt.
+            $unsalted .= chr(ord($salted[$i]) ^ ord($salt[$i]));
+        }
+
+        return base64_encode($unsalted);
     }
 
     /**
-     * Determine if the CSRF protection is enabled.
+     * Verify a token is valid.
      *
-     * @return bool TRUE if the CSRF protection is enabled, otherwise FALSE.
+     * @param string $token The token.
+     * @return bool TRUE if the token is valid, otherwise FALSE.
      */
-    public static function isEnabled(): bool
+    protected function verifyToken(string $token): bool
     {
-        return static::$enabled;
-    }
+        $decoded = base64_decode($token, true);
 
-    /**
-     * Set the CSRF token field name.
-     *
-     * @param string $field The CSRF token field name.
-     */
-    public static function setField(string $field): void
-    {
-        static::$field = $field;
-    }
+        if ($decoded === false) {
+            return false;
+        }
 
-    /**
-     * Set the CSRF token header.
-     *
-     * @param string $header The CSRF token header.
-     */
-    public static function setHeader(string $header): void
-    {
-        static::$header = $header;
-    }
+        $length = strlen($decoded);
 
-    /**
-     * Set the CSRF session key.
-     *
-     * @param string $key The CSRF session key.
-     */
-    public static function setKey(string $key): void
-    {
-        static::$key = $key;
-    }
+        if ($length <= static::TOKEN_LENGTH) {
+            return false;
+        }
 
-    /**
-     * Set the skip check callback.
-     *
-     * @param Closure|null $skipCheck The skip check callback.
-     */
-    public static function skipCheckCallback(Closure|null $skipCheck): void
-    {
-        static::$skipCheck = $skipCheck;
-    }
+        $key = substr($decoded, 0, static::TOKEN_LENGTH);
+        $hmac = substr($decoded, static::TOKEN_LENGTH);
 
-    /**
-     * Generate a CSRF token.
-     *
-     * @return string The CSRF token.
-     */
-    protected static function generateToken(): string
-    {
-        return hash('sha256', random_bytes(12));
+        $expectedHmac = hash_hmac('sha1', $key, $this->salt);
+
+        return hash_equals($hmac, $expectedHmac);
     }
 }

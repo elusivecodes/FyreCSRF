@@ -3,27 +3,20 @@ declare(strict_types=1);
 
 namespace Tests;
 
+use Fyre\Config\Config;
+use Fyre\Container\Container;
 use Fyre\Security\CsrfProtection;
 use PHPUnit\Framework\TestCase;
 
 final class CsrfProtectionTest extends TestCase
 {
-    public function testDisable(): void
+    protected CsrfProtection $csrfProtection;
+
+    public function testGetCookieToken(): void
     {
-        CsrfProtection::enable();
-        CsrfProtection::disable();
-
-        $this->assertFalse(
-            CsrfProtection::isEnabled()
-        );
-    }
-
-    public function testEnable(): void
-    {
-        CsrfProtection::enable();
-
-        $this->assertTrue(
-            CsrfProtection::isEnabled()
+        $this->assertSame(
+            $this->csrfProtection->getCookieToken(),
+            $this->csrfProtection->getCookieToken()
         );
     }
 
@@ -31,7 +24,20 @@ final class CsrfProtectionTest extends TestCase
     {
         $this->assertSame(
             'csrf_token',
-            CsrfProtection::getField()
+            $this->csrfProtection->getField()
+        );
+    }
+
+    public function testGetFormToken(): void
+    {
+        $this->assertNotSame(
+            $this->csrfProtection->getFormToken(),
+            $this->csrfProtection->getFormToken()
+        );
+
+        $this->assertNotSame(
+            $this->csrfProtection->getCookieToken(),
+            $this->csrfProtection->getFormToken()
         );
     }
 
@@ -39,95 +45,17 @@ final class CsrfProtectionTest extends TestCase
     {
         $this->assertSame(
             'Csrf-Token',
-            CsrfProtection::getHeader()
-        );
-    }
-
-    public function testGetKey(): void
-    {
-        $this->assertSame(
-            '_csrfToken',
-            CsrfProtection::getKey()
-        );
-    }
-
-    public function testGetToken(): void
-    {
-        $token = CsrfProtection::getToken();
-
-        $this->assertMatchesRegularExpression(
-            '/\w{12}/',
-            $token
-        );
-
-        $this->assertSame(
-            $token,
-            CsrfProtection::getToken()
-        );
-    }
-
-    public function testGetTokenHash(): void
-    {
-        $token = CsrfProtection::getToken();
-        $tokenHash = CsrfProtection::getTokenHash();
-
-        $this->assertTrue(
-            password_verify($token, $tokenHash)
-        );
-
-        $this->assertNotSame(
-            $tokenHash,
-            CsrfProtection::getTokenHash()
-        );
-    }
-
-    public function testSession(): void
-    {
-        $key = CsrfProtection::getKey();
-
-        $this->assertSame(
-            CsrfProtection::getToken(),
-            $_SESSION[$key]
-        );
-    }
-
-    public function testSetField(): void
-    {
-        CsrfProtection::setField('token');
-
-        $this->assertSame(
-            'token',
-            CsrfProtection::getField()
-        );
-    }
-
-    public function testSetHeader(): void
-    {
-        CsrfProtection::setHeader('Security-Token');
-
-        $this->assertSame(
-            'Security-Token',
-            CsrfProtection::getHeader()
-        );
-    }
-
-    public function testSetKey(): void
-    {
-        CsrfProtection::setKey('_token');
-
-        $this->assertSame(
-            '_token',
-            CsrfProtection::getKey()
+            $this->csrfProtection->getHeader()
         );
     }
 
     protected function setUp(): void
     {
-        CsrfProtection::setField('csrf_token');
-        CsrfProtection::setHeader('Csrf-Token');
-        CsrfProtection::setKey('_csrfToken');
-        CsrfProtection::skipCheckCallback(null);
+        $container = new Container();
+        $container->singleton(Config::class);
 
-        $_SESSION = [];
+        $container->use(Config::class)->set('Csrf.salt', 'l2wyQow3eTwQeTWcfZnlgU8FnbiWljpGjQvNP2pL');
+
+        $this->csrfProtection = $container->build(CsrfProtection::class);
     }
 }
