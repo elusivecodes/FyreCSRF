@@ -22,6 +22,7 @@ use function ord;
 use function random_bytes;
 use function strlen;
 use function substr;
+use function time;
 
 /**
  * CsrfProtection
@@ -100,7 +101,9 @@ class CsrfProtection
         }
 
         return $response->setCookie($this->cookieOptions['name'], $this->getCookieToken(), [
-            'expires' => $this->cookieOptions['expires'],
+            'expires' => $this->cookieOptions['expires'] ?
+                time() + $this->cookieOptions['expires'] :
+                null,
             'domain' => $this->cookieOptions['domain'],
             'path' => $this->cookieOptions['path'],
             'secure' => $this->cookieOptions['secure'],
