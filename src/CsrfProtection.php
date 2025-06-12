@@ -54,8 +54,6 @@ class CsrfProtection
         'skipCheck' => null,
     ];
 
-    protected Container $container;
-
     protected array $cookieOptions;
 
     protected string|null $field;
@@ -74,10 +72,10 @@ class CsrfProtection
      * @param Container $container The Container.
      * @param Config $config The Config.
      */
-    public function __construct(Container $container, Config $config)
-    {
-        $this->container = $container;
-
+    public function __construct(
+        protected Container $container,
+        Config $config
+    ) {
         $options = array_replace_recursive(static::$defaults, $config->get('Csrf', []));
 
         $this->cookieOptions = $options['cookie'];

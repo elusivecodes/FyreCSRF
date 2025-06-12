@@ -14,17 +14,14 @@ use Fyre\Server\ServerRequest;
  */
 class CsrfProtectionMiddleware extends Middleware
 {
-    protected CsrfProtection $csrfProtection;
-
     /**
      * New CsrfProtectionMiddleware constructor.
      *
      * @param CsrfProtection $csrfProtection The CsrfProtection.
      */
-    public function __construct(CsrfProtection $csrfProtection)
-    {
-        $this->csrfProtection = $csrfProtection;
-    }
+    public function __construct(
+        protected CsrfProtection $csrfProtection
+    ) {}
 
     /**
      * Handle a ServerRequest.
