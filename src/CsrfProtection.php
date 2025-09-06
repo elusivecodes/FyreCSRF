@@ -9,6 +9,7 @@ use Fyre\Container\Container;
 use Fyre\Security\Exceptions\CsrfException;
 use Fyre\Server\ClientResponse;
 use Fyre\Server\ServerRequest;
+use Fyre\Utility\Traits\MacroTrait;
 
 use function array_key_exists;
 use function array_replace_recursive;
@@ -29,6 +30,8 @@ use function time;
  */
 class CsrfProtection
 {
+    use MacroTrait;
+
     protected const CHECK_METHODS = [
         'delete',
         'patch',

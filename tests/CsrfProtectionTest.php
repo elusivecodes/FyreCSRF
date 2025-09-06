@@ -6,7 +6,10 @@ namespace Tests;
 use Fyre\Config\Config;
 use Fyre\Container\Container;
 use Fyre\Security\CsrfProtection;
+use Fyre\Utility\Traits\MacroTrait;
 use PHPUnit\Framework\TestCase;
+
+use function class_uses;
 
 final class CsrfProtectionTest extends TestCase
 {
@@ -46,6 +49,14 @@ final class CsrfProtectionTest extends TestCase
         $this->assertSame(
             'Csrf-Token',
             $this->csrfProtection->getHeader()
+        );
+    }
+
+    public function testMacroable(): void
+    {
+        $this->assertContains(
+            MacroTrait::class,
+            class_uses(CsrfProtection::class)
         );
     }
 
